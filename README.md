@@ -64,7 +64,7 @@ To set up the project locally, follow these steps:
    flask run
 
 5. **Access the App**:
-   Open your browser and go to ```http://127.0.0.1:5000/.
+   Open your browser and go to http://127.0.0.1:5000/.
    
 ---
 
@@ -80,7 +80,7 @@ To run the application using Docker:
    docker run -p 8080:8080 mass-spectra-classifier
 
 3. **Access the App**:
-   Open your browser and go to ```http://127.0.0.1:5000/.
+   Open your browser and go to http://127.0.0.1:5000/.
 
 
 ---
@@ -96,7 +96,7 @@ The application is deployed using Google Cloud Run. To deploy your own version:
 
 3. Deploy to Google Cloud Run:
    ```bash
-  gcloud builds submit --config cloudbuild.yaml
+   gcloud builds submit --config cloudbuild.yaml
 
 ---
 
@@ -115,5 +115,5 @@ The application is deployed using Google Cloud Run. To deploy your own version:
 - Models: Random Forest, XGBoost optimized for spectra classification tasks.
 
 
-Made with ❤️ by Oluwatobiloba Ajibola
+Made with ❤️ by Tobi Ajibola
 
