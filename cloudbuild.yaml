@@ -1,0 +1,55 @@
+steps:
+  # Print directory contents for debugging
+  - name: 'ubuntu'
+    args:
+      - bash
+      - -c
+      - |
+        echo "Current directory contents:"
+        ls -la
+        echo "Model directory contents:"
+        ls -la app/models/
+        echo "Model files found:"
+        find app/models/ -type f \( -name "*.json" -o -name "*.joblib" \)
+
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/mass-spectra-classifier', '.']
+
+  # Verify the built container contents
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Verifying container contents:"
+        docker run --rm gcr.io/$PROJECT_ID/mass-spectra-classifier ls -la /app/app/models/
+        echo "Model files in container:"
+        docker run --rm gcr.io/$PROJECT_ID/mass-spectra-classifier find /app/app/models/ -type f \( -name "*.json" -o -name "*.joblib" \)
+  
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/mass-spectra-classifier']
+  
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'mass-spectra-classifier'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/mass-spectra-classifier'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'MODEL_PATH=/app/app/models'
+      - '--memory'
+      - '2Gi'
+
+images:
+  - 'gcr.io/$PROJECT_ID/mass-spectra-classifier'
+
+timeout: '1800s'

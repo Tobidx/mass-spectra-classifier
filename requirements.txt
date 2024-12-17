@@ -1,0 +1,10 @@
+Flask
+numpy
+pandas
+scikit-learn
+xgboost
+scipy
+plotly
+gunicorn
+python-dotenv
+Werkzeug
