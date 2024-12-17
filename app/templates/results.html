@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-lg p-8">
+    <!-- Back Button -->
+    <div class="mb-8">
+        <a href="/" class="text-blue-600 hover:text-blue-800 flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Back to Comparison
+        </a>
+    </div>
+
+    <div class="space-y-8">
+        <!-- Prediction Results -->
+        <div class="bg-gray-50 p-6 rounded-lg">
+            <h2 class="text-2xl font-bold mb-4">Analysis Results</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Prediction -->
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="font-bold text-lg mb-2">Result</h3>
+                    <div class="flex items-center">
+                        {% if prediction == 1 %}
+                            <svg class="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <p class="text-2xl font-bold text-green-600">Mass spectra match - Same compound detected</p>
+                        {% else %}
+                            <svg class="w-6 h-6 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            <p class="text-2xl font-bold text-red-600">Mass spectra differ - Different compounds detected</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Confidence -->
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="font-bold text-lg mb-2">Confidence Level</h3>
+                    <div class="flex flex-col">
+                        <p class="text-2xl font-bold {{ 'text-green-600' if probability >= 0.8 else 'text-yellow-600' if probability >= 0.6 else 'text-red-600' }}">
+                            {{ "%.1f"|format(probability * 100) }}%
+                        </p>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                            <div class="h-2.5 rounded-full {{ 'bg-green-600' if probability >= 0.8 else 'bg-yellow-600' if probability >= 0.6 else 'bg-red-600' }}"
+                                style="width: {{ probability * 100 }}%">
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">
+                            {% if probability >= 0.8 %}
+                                High confidence prediction
+                            {% elif probability >= 0.6 %}
+                                Moderate confidence prediction
+                            {% else %}
+                                Low confidence prediction
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Values -->
+        <div class="bg-gray-50 p-6 rounded-lg">
+            <h2 class="text-2xl font-bold mb-4">Feature Analysis</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {% for feature_name, value in features.items() %}
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="font-bold text-lg mb-2">{{ feature_name|title|replace('_', ' ') }}</h3>
+                    <p class="text-2xl font-bold text-blue-600">{{ "%.4f"|format(value) }}</p>
+                    <p class="text-sm text-gray-600 mt-2">
+                        {% if feature_name == 'cosine_similarity' %}
+                            Measures the spectral vector similarity (0-1)
+                        {% elif feature_name == 'correlation' %}
+                            Peak intensity correlation (-1 to 1)
+                        {% elif feature_name == 'area_ratio' %}
+                            Relative peak area comparison (0-1)
+                        {% endif %}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Spectra Plot -->
+        <div class="bg-gray-50 p-6 rounded-lg">
+            <h2 class="text-2xl font-bold mb-4">Spectra Comparison</h2>
+            
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="text-sm text-gray-600 flex justify-between w-full">
+                        <span class="font-semibold text-blue-600">{{ spectrum1_name }}</span>
+                        <span class="text-gray-400 mx-4">vs</span>
+                        <span class="font-semibold text-green-600">{{ spectrum2_name }}</span>
+                    </div>
+                </div>
+                <div id="plot-container" class="w-full relative">
+                    <div id="comparison-plot" class="w-full" style="height: 600px;">
+                        <!-- Loading spinner -->
+                        <div class="loading-spinner absolute inset-0 flex items-center justify-center">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Information -->
+        <div class="bg-gray-50 p-6 rounded-lg">
+            <h2 class="text-2xl font-bold mb-4">Model Information</h2>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <p class="mb-2"><span class="font-bold">Model Name:</span> {{ model_name }}</p>
+                <p class="mb-2"><span class="font-bold">Analysis Method:</span>
+                    {% if 'cosine' in model_type %}
+                    Mass Spectral Cosine Similarity Analysis
+                    {% else %}
+                    Multi-Feature Mass Spectral Analysis
+                    {% endif %}
+                </p>
+                <p><span class="font-bold">Description:</span>
+                    {% if 'cosine' in model_type %}
+                    This model analyzes mass spectral similarity using the cosine angle between spectral intensity vectors.
+                    {% else %}
+                    This model performs comprehensive mass spectral analysis combining multiple features: cosine similarity, peak correlation, and relative peak area ratios.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Show loading spinner initially
+    document.querySelector('.loading-spinner').style.display = 'flex';
+
+    // Plot configuration
+    const plotConfig = {
+        responsive: true,
+        displayModeBar: true,
+        scrollZoom: true,
+        displaylogo: false
+    };
+
+    try {
+        console.log("Creating comparison plot");
+        const plotData = {{ plot_data|safe }};
+        const plotObj = (typeof plotData === 'string') ?
+            JSON.parse(plotData) : plotData;
+
+        Plotly.newPlot('comparison-plot', plotObj.data, plotObj.layout, plotConfig)
+            .then(() => {
+                console.log("Plot created successfully");
+                document.querySelector('.loading-spinner').style.display = 'none';
+            })
+            .catch(error => {
+                console.error("Error creating plot:", error);
+                document.getElementById('comparison-plot').innerHTML =
+                    '<div class="text-red-600 p-4">Error loading plot: ' + error.message + '</div>';
+            });
+    } catch (error) {
+        console.error("Error processing plot data:", error);
+        document.getElementById('comparison-plot').innerHTML =
+            '<div class="text-red-600 p-4">Error processing plot data: ' + error.message + '</div>';
+    }
+
+    // Handle window resize
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            Plotly.Plots.resize('comparison-plot');
+        }, 250);
+    });
+});
+</script>
+{% endblock %}
