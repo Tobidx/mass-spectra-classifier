@@ -1,28 +1,43 @@
 # **Mass Spectrometry Classifier**
 
-A machine learning-powered web application for mass spectra classification with **97.89% accuracy** and real-time prediction. This application streamlines the analysis of mass spectra data, enabling researchers and scientists to classify spectra efficiently.
+A machine learning-powered web application for mass spectra classification with **97.89% accuracy** and real-time prediction. Users can upload two mass spectra files and get instant analysis of their similarity, helping to determine if they represent the same compound.
 
 [**Live Demo**](https://mass-spectrometry-classifier-application-289208564214.us-central1.run.app/)
 
 ---
 
 ## **Features**
-- **High Accuracy**: Achieves 97.89% accuracy using optimized machine learning models.
-- **Efficient Spectra Comparison**: Utilizes advanced ML algorithms (Random Forest, XGBoost) for accurate classification.
-- **Real-Time Analysis**: Provides predictions in under 500ms.
-- **Web-Based Interface**: Accessible through any browser with a user-friendly design.
-- **Cloud Deployment**: Deployed on Google Cloud Run for scalability and reliability.
-- **Dockerized Application**: Containerized for easy deployment and reproducibility.
+
+- **Multiple Analysis Models**
+
+XGBoost with Cosine Similarity
+XGBoost with Top 3 Features
+Random Forest with Cosine Similarity
+Random Forest with Top 3 Features
+
+- **Advanced Analysis Metrics**
+
+Cosine Similarity Analysis
+Peak Correlation Measurement
+Area Ratio Comparison
+Confidence Scoring
+
+- **Interactive Visualization**
+
+Real-time Spectra Comparison
+Interactive Plot Manipulation
+Downloadable Results
 
 ---
 
 ## **Tech Stack**
-- **Backend**: Python (Flask)
-- **Frontend**: HTML, CSS
-- **Machine Learning**: Random Forest, XGBoost
-- **Containerization**: Docker
-- **Deployment**: Google Cloud Run
-
+- Backend Framework: Python/Flask
+- Frontend: HTML5, TailwindCSS, JavaScript
+- Machine Learning:XGBoost, Scikit-learn, NumPy/Pandas
+- Visualization: Plotly.js
+- Deployment: Google Cloud Run
+- CI/CD: Google Cloud Build
+  
 ---
 
 ## **Installation Instructions**
@@ -44,7 +59,9 @@ To set up the project locally, follow these steps:
 
 4. **Run the Application**:
    ```bash
-   python app.py
+   export FLASK_APP=run.py
+   export FLASK_ENV=development
+   flask run
 
 5. **Access the App**:
    Open your browser and go to ```http://127.0.0.1:5000/.
@@ -56,11 +73,11 @@ To run the application using Docker:
 
 1. **Build the Docker Image**:
    ```bash
-   docker build -t mass-spectrometry-classifier .
+   docker build -t mass-spectra-classifier .
 
 2. **Run the Docker Container**:
    ```bash
-   docker run -p 5000:5000 mass-spectrometry-classifier
+   docker run -p 8080:8080 mass-spectra-classifier
 
 3. **Access the App**:
    Open your browser and go to ```http://127.0.0.1:5000/.
@@ -75,11 +92,11 @@ The application is deployed using Google Cloud Run. To deploy your own version:
 
 2. Build and push the Docker image to Google Container Registry (GCR):
    ```bash
-   gcloud builds submit --tag gcr.io/mass-spectra-app/mass-spectrometry-classifier
+   gcloud config set project mass-spectra-app
 
 3. Deploy to Google Cloud Run:
    ```bash
-  gcloud run deploy --image gcr.io/mass-spectra-app/mass-spectrometry-classifier --platform managed
+  gcloud builds submit --config cloudbuild.yaml
 
 ---
 
@@ -97,4 +114,6 @@ The application is deployed using Google Cloud Run. To deploy your own version:
 - Prediction Time: <500ms
 - Models: Random Forest, XGBoost optimized for spectra classification tasks.
 
+
+Made with ❤️ by Oluwatobiloba Ajibola
 
