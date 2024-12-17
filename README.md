@@ -10,23 +10,23 @@ A machine learning-powered web application for mass spectra classification with 
 
 - **Multiple Analysis Models**
 
-XGBoost with Cosine Similarity
-XGBoost with Top 3 Features
-Random Forest with Cosine Similarity
-Random Forest with Top 3 Features
+- XGBoost with Cosine Similarity
+- XGBoost with Top 3 Features
+- Random Forest with Cosine Similarity
+- Random Forest with Top 3 Features
 
 - **Advanced Analysis Metrics**
 
-Cosine Similarity Analysis
-Peak Correlation Measurement
-Area Ratio Comparison
-Confidence Scoring
+- Cosine Similarity Analysis
+- Peak Correlation Measurement
+- Area Ratio Comparison
+- Confidence Scoring
 
 - **Interactive Visualization**
 
-Real-time Spectra Comparison
-Interactive Plot Manipulation
-Downloadable Results
+- Real-time Spectra Comparison
+- Interactive Plot Manipulation
+- Downloadable Results
 
 ---
 
